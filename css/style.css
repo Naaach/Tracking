@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:500');
+/* font-family: 'Raleway', sans-serif; */
+body {
+	background-color: #E0E0E0;
+	font-size: 14px;
+	overflow-y: visible;
+	font-family: 'Raleway', sans-serif;
+}
+/* __Header__ */
+header > div.header-container {
+	display: block;
+	padding-bottom: 1em;
+	border-bottom: 0.7px solid #868686;
+}
+button.btn-addOrder-modal {
+	margin-top: 1.3em;
+}
+/* __Orders__ */
+section#orders {
+	margin-top: 7vh;
+}
+h4 span.tab-heading-status {
+	float: right;
+}
+h4 span.tab-heading-status > .circle {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	line-height: 1em;
+	margin-top: 0.1em;
+	border-radius: 50%;
+}
+h4 span.tab-heading-status[data-status="0"] > .circle {
+	background-color: black;
+}
+h4 span.tab-heading-status[data-status="1"] > .circle {
+	background-color: #FF8432;
+}
+h4 span.tab-heading-status[data-status="2"] > .circle {
+	background-color: orange;
+}
+h4 span.tab-heading-status[data-status="3"] > .circle {
+	background-color: lightgreen;
+}
+h4 span.tab-heading-status[data-status="4"] > .circle {
+	background-color: #2FCC1A;
+}
+
+div.panel-body > div.row {
+	border-bottom: 0.7px solid #868686;
+	padding-bottom: 2em;
+}
+
+div.panel-body  div.info,
+div.panel-body  div.actions {
+	padding-top: 2em;
+}
+div.panel-body  div.tracking > div {
+	padding: 0.5em;
+}
+div.panel-body  div.actions  button {
+	margin: calc(100% / 25%) ;
+}
+
+/* __Modals__ */
+div#modal-bg {
+	position: absolute;
+	display: none;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, .6);
+	opacity: 0;
+}
+/* __Add Order__ */
+footer #addOrder-modal  {
+	display: inline-block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	/*background-color: #E0E0E0;*/
+	background-color: white;
+	border-radius: 3px;
+	display: none;
+	opacity: 0;
+}
+
+footer #addOrder-modal > .container {
+	width: 60vw;
+	padding: 4em 0;
+	border: 0.7px solid #868686;
+	background-color: #E0E0E0;
+	border-radius: 3px;
+
+}
