@@ -47,6 +47,26 @@ $(document).ready(function() {
 	  hideDuration: 200
 	});
 
+	/* __17Track API COnfiguration */
+	function doTrack() {
+		let panels = document.querySelectorAll('div.panel-collapse div.panel-body > div.info > div.tracking > div.number > span');
+
+		for (var i = 0; i < panels.length; i++) {
+			let containerID = panels[i].getAttribute('data-container-id');
+			let number = panels[i].innerHTML;
+
+			YQV5.trackSingle({
+	        YQ_ContainerId:"tracking-container-" + containerID,
+	        YQ_Height:400,
+	        YQ_Fc:"0",
+	        YQ_Lang:"es",
+	        YQ_Num:number
+	    });
+		}
+	}
+
+
+
 	/////////////////////
 	//		AJAX 
 	////////////////////
@@ -64,6 +84,7 @@ $(document).ready(function() {
 				//inner the HTML on the view
 				$('#panels-view').html(response);
 				deleteOrderAjax();
+				doTrack();
 			} else {
 				$('#panels-view').html('No hay datos para mostrar');
 
@@ -133,7 +154,7 @@ $(document).ready(function() {
 				tracking_number = $('section#addOrder-modal form input#addTracking'),
 				max_days = $('section#addOrder-modal form input#addMaxDays'),
 				status = $('section#addOrder-modal form select#addStatus'),
-				comment = $('section#addOrder-modal form textarea#addComment');
+				comment = $('section#addOrder-modal form textarea[name="addComment"]');
 
 		//Obtener los valores de los campos
 		let nameVal = name.val(),
@@ -247,7 +268,10 @@ $(document).ready(function() {
 
 						//cerrar el modal
 						cerrarModal();
-						
+
+						deleteOrderAjax();
+						doTrack();
+
 					} else {
 						//Notification
 						$.notify("Ocurrio un error insertando el pedido", {
@@ -260,6 +284,13 @@ $(document).ready(function() {
 		}
 
 	});
+
+	/////////////////////
+	//		WORKERS 
+	////////////////////
+	
+	/* __WORKER FOR TRACKING__ */
+	setInterval(doTrack, 360000);
 
 }); //document.ready
 

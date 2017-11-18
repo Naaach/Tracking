@@ -95,7 +95,7 @@
 							<div class="col-md-12 text-center">
 								<button type="button" class="btn btn-danger closeModal">Cerrar</button>
 								<button type="button" class="btn btn-success"  name="addOrder">Añadir</button>
-								<button type="button" class="btn btn-info closeModal"  name="close" name="borrarAddOrder">Limpiar</button>
+								<input type="reset" class="btn btn-info"  name="limpiar" value="Limpiar">
 							</div>
 						</div>
 					</form>
@@ -106,6 +106,7 @@
 		<script type="text/javascript" src="/js/jquery.min.js"></script>
 		<script type="text/javascript" src="/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="/js/notify.js"></script>
+		<script type="text/javascript" src="//www.17track.net/externalcall.js"></script>
 		<script type="text/javascript" src="/js/app.js"></script>
 	</footer>
 </html>

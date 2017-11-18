@@ -19,7 +19,15 @@ $table = $db_info['db_table'];
 
 
 
+////////////////////////////////////
+//		AJAX REQUEST
+///////////////////////////////////
 
+/**
+ * Añadir un nuevo pedido a la base de datos
+ * @param  [Array] $attrs [$_POST]
+ * @return [HTML]        [order-panel]
+ */
 function newOrder($attrs) {
 	global $cxn;
 
@@ -45,17 +53,17 @@ function newOrder($attrs) {
 			$query = "SELECT * FROM orders ORDER BY id DESC LIMIT 1;";
 
 			if ($result = mysqli_query($cxn, $query)) {
-			//While fetch_array
-			while($row = mysqli_fetch_array($result)) {
-				print create_table_panel($row['id'], $row['name'], $row['status'], $row['comment'], $row['order_date'], $row['max_time'], $row['last_edit'], $row['tracking_number'], $row['origin'], $row['tracking_web']);
-			} // End of while
+				//While fetch_array
+				while($row = mysqli_fetch_array($result)) {
+					print create_table_panel($row['id'], $row['name'], $row['status'], $row['comment'], $row['order_date'], $row['max_time'], $row['last_edit'], $row['tracking_number'], $row['origin'], $row['tracking_web']);
+				} // End of while
 
-		} else {
-			echo false;
-		}
+			} else {
+				echo false;
+			}
 
-		//Cerrar la conexion
-		close_db($cxn);
+			//Cerrar la conexion
+			close_db($cxn);
 
 		} else {
 			//Volver a la home y error de query
@@ -75,9 +83,7 @@ if (isset($post['addOrder'])) {
 
 
 
-////////////////////////////////////
-//		AJAX REQUEST
-///////////////////////////////////
+
 
 /**
  * load data form database

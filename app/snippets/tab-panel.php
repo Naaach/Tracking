@@ -51,14 +51,14 @@ function create_table_panel($id, $name, $status, $comment, $order_date, $max_tim
 					<!-- Info -->
 					<div class=\"row info\">
 						<!-- Comentarios -->
-						<div class=\"col-md-5\">
+						<div class=\"col-md-6\" id=\"allInfo\">
+							<h4>Datos de la compañia</h4>
+							<div class=\"info\" id=\"tracking-container-". $id ."\">
+							</div>
+						</div>
+						<div class=\"col-md-3\">
 							<h4>Decripcción</h4>
 							<p>" . $comment ."</p>
-						</div>
-						<div class=\"col-md-4\" id=\"allInfo\">
-							<h4>Datos de la compañia</h4>
-							<div class=\"info\">
-							</div>
 						</div>
 						<!-- tracking -->
 						<div class=\"col-md-3 tracking\">
@@ -68,7 +68,7 @@ function create_table_panel($id, $name, $status, $comment, $order_date, $max_tim
 							</div>
 							<div class=\"number\">
 								<h5>Nº de seguimiento</h5>
-								<span>" . $tracking_number . "</span>
+								<span data-container-id=\"". $id ."\">" . $tracking_number . "</span>
 							</div>
 							<div class=\"Web\">
 								<h5>Seguimiento web</h5>
