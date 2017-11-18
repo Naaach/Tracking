@@ -20,7 +20,9 @@ $table = $db_info['db_table'];
 
 
 
-function newOrder($cxn = "", $attrs) {
+function newOrder($attrs) {
+	global $cxn;
+
 	if (!empty($attrs)) {
 
 		$nombre = $attrs['addName'];
@@ -39,35 +41,31 @@ function newOrder($cxn = "", $attrs) {
 		VALUES (NULL, '$nombre', $status, '$comment', '$order_date', $max_time, '$last_edit', '$tracking_number', '$origin', '$tracking_web');";
 		
 		if (mysqli_query($cxn, $query)) {
-			//Cerrar la conexion
-			close_db($cxn);
+			//Recuperar los datos del registro introducido
+			$query = "SELECT * FROM orders ORDER BY id DESC LIMIT 1;";
 
-			//Volver a la home
-			header("Location: /");
-
-			//Mensaje stisfacotiro
-			print 
-			'<div class="alert alert-seccess">
-				<strong>Bien!</strong> el pedido se ha podido añadir a la lista ' .'
-			</div>';
+			if ($result = mysqli_query($cxn, $query)) {
+			//While fetch_array
+			while($row = mysqli_fetch_array($result)) {
+				print create_table_panel($row['id'], $row['name'], $row['status'], $row['comment'], $row['order_date'], $row['max_time'], $row['last_edit'], $row['tracking_number'], $row['origin'], $row['tracking_web']);
+			} // End of while
 
 		} else {
-			//Volver a la home y error de quert
-			header("Location: /");
-			print 
-			'<div class="alert alert-alert">
-				<strong>Alerta!</strong> el pedido no se ha podido añadir a la lista (query)' .'
-			</div>';
+			echo false;
+		}
+
+		//Cerrar la conexion
+		close_db($cxn);
+
+		} else {
+			//Volver a la home y error de query
+			echo false;
 
 		}
 
 	} else {
 		//Volver a la home, no hay datos en $post
-		header("Location: /");
-		print 
-			'<div class="alert alert-alert">
-				<strong>Alerta!</strong> el pedido no se ha podido añadir a la lista, no hay datos!' .'
-			</div>';
+		echo false;
 	}
 }
 
@@ -90,7 +88,7 @@ if (isset($post['addOrder'])) {
  */
 function load_data() {
 	global $cxn, $table;
-	$query = "SELECT * FROM $table;";
+	$query = "SELECT * FROM $table ORDER BY id DESC;";
 
 	if ($result = mysqli_query($cxn, $query)) {
 
@@ -131,6 +129,9 @@ function delete_order($id) {
 if (isset($_POST['ajaxRequest'])) {
 
 	switch ($_POST['ajaxRequest']) {
+		case 'addOrder':
+			newOrder($post);
+			break;
 		case 'loadData':
 			load_data();
 			break;

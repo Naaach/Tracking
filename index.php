@@ -4,7 +4,9 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta author="Nacho">
-		<title>Tracking Master</title>
+		<title>Tracking	</title>
+		<!-- CSS CDN -->
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 		<!-- CSS -->
 		<link rel="stylesheet" href="/css/normalize.css">
 		<link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -15,7 +17,7 @@
 			<div class="container-fluid header-container">
 				<div class="row">
 					<div class="col-md-3 col-md-push-2 title">
-						<h3>Tracking</h3>
+						<h3><i class="fa fa-paper-plane"></i>Tracking</h3>
 					</div>
 					<div class="col-md-3 col-md-push-6">
 						<button type="button" class="btn btn-info btn-addOrder-modal">Añadir pedido</button>
@@ -53,7 +55,7 @@
 								</div>
 								<div class="form-goup">
 									<label for="addDate">Introduce la fecha del pedido:</label>
-									<input type="text" name="addDate" id="addDate" class="form-control" placeholder="Fecha">
+									<input type="text" name="addDate" id="addDate" class="form-control" placeholder="aaaa-mm-dd">
 								</div>
 								<div class="form-goup">
 									<label for="addOrigin">Introduce el origen del envio</label>
@@ -92,7 +94,7 @@
 						<div class="row">
 							<div class="col-md-12 text-center">
 								<button type="button" class="btn btn-danger closeModal">Cerrar</button>
-								<button type="button" class="btn btn-success closeModal"  name="addOrder">Añadir</button>
+								<button type="button" class="btn btn-success"  name="addOrder">Añadir</button>
 								<button type="button" class="btn btn-info closeModal"  name="close" name="borrarAddOrder">Limpiar</button>
 							</div>
 						</div>
@@ -103,7 +105,7 @@
 		<!-- scripts -->
 		<script type="text/javascript" src="/js/jquery.min.js"></script>
 		<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/js/notify.js"></script>
 		<script type="text/javascript" src="/js/app.js"></script>
-		<script type="text/javascript" src="/js/ajax.js"></script>
 	</footer>
 </html>
