@@ -34,20 +34,21 @@ $(document).ready(function() {
 
 	/* Notify.js defaults */
 	$.notify.defaults({
-	  // position defines the notification position though uses the defaults below
 	  position: 'top right',
 	  globalPosition: 'bottom left',
-	  // show animation
 	  showAnimation: 'slideDown',
-	  // show animation duration
 	  showDuration: 1000,
-	  // hide animation
 	  hideAnimation: 'slideUp',
-	  // hide animation duration
 	  hideDuration: 200
 	});
 
 	/* __17Track API COnfiguration */
+
+	/**
+	 * configure the track sistem for panel
+	 * @param  {[type]} id [description]
+	 * @return {[type]}    [description]
+	 */
 	function doTrack(id) {
 		let panel = document.querySelector('div'+ id +' div.panel-body > div.info > div.tracking > div.number > span');
 
@@ -55,25 +56,74 @@ $(document).ready(function() {
 		let number = panel.innerHTML;
 
 		YQV5.trackSingle({
-        YQ_ContainerId:"tracking-container-" + containerID,
-        YQ_Height:400,
-        YQ_Fc:"0",
-        YQ_Lang:"es",
-        YQ_Num:number
+        YQ_ContainerId: "tracking-container-" + containerID,
+        YQ_Height: 400,
+        YQ_Fc: "0",
+        YQ_Lang: "es",
+        YQ_Num: number
     });
 	}
 
-	//Load on open panel
-	function loadTrackOnOpen() {
+	/**
+	 * Load tracking system on open panel
+	 * @param  {$element} el jQuery element
+	 * @return void
+	 */
+	function loadTrackOnOpen(el) {
+		let aria_expanded = $(this).attr('aria-expanded');
+		if (aria_expanded || aria_expanded == undefined ) {
+			let id = $(el).attr('href');
+			doTrack(id);
+		}
+	}
 
-		$('div.panel-heading > h4.panel-title > a').on('click', function(e) {
-			let aria_expanded = $(this).attr('aria-expanded');
-			if (!aria_expanded || aria_expanded == undefined ) {
-					let id = $(this).attr('href');
-					console.log(id);
-					console.log($(this).attr('aria-expanded'));
-					doTrack(id);
-			}
+	function timingOrder(id) {
+		let timeRow = $('div'+ id +' div.order-time'),
+				order_date = timeRow.find('div.order_date span').html().split('-'),
+				max_time = timeRow.find('div.max_time span').html(),
+				rest_time = timeRow.find('div.rest-order-time span');
+
+		let limitDate = new Date(order_date[0], order_date[1], order_date[2]);
+		limitDate.setDate(limitDate.getDate() + parseInt(max_time));
+		
+		console.log(limitDate);
+		setInterval(function() {
+			let actualDate = new Date();
+
+			var restTime = limitDate.getTime() - actualDate.getTime();
+
+			let days = Math.floor(restTime / (1000 * 60 * 60 * 24)),
+		  		hours = Math.floor((restTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+		  		minutes = Math.floor((restTime % (1000 * 60 * 60)) / (1000 * 60)),
+		  		seconds = Math.floor((restTime % (1000 * 60)) / 1000);
+
+			rest_time.html(days + ' - ' + hours +':'+ minutes +':'+ seconds);
+
+		}, 1000);
+		
+	}
+
+	/**
+	 * Execute function to a especific panel when it opens
+	 * @return void
+	 */
+	function onOpenPanel() {
+		let panel = $('div.panel-heading > h4.panel-title > a');
+
+		panel.on('click', function(e) { 
+
+			let self = $(this);
+
+			// Show thw tracking info
+			loadTrackOnOpen(self);
+
+			// Refresh the delete function
+			deleteOrderAjax();
+
+			// Start timing the rest for the delivery
+			let id = self.attr('href');
+			//timingOrder(id);
+
 		});
 
 	}
@@ -95,8 +145,9 @@ $(document).ready(function() {
 			if (response) {
 				//inner the HTML on the view
 				$('#panels-view').html(response);
-				deleteOrderAjax();
-				loadTrackOnOpen();
+
+				//Functions when the panel is open
+				onOpenPanel();
 			} else {
 				$('#panels-view').html('No hay datos para mostrar');
 
@@ -163,6 +214,7 @@ $(document).ready(function() {
 		let name = $('section#addOrder-modal form input#addName'),
 				date = $('section#addOrder-modal form input#addDate'),
 				origin = $('section#addOrder-modal form input#addOrigin'),
+				shop = $('section#addOrder-modal form select#addShop'),
 				tracking_number = $('section#addOrder-modal form input#addTracking'),
 				max_days = $('section#addOrder-modal form input#addMaxDays'),
 				status = $('section#addOrder-modal form select#addStatus'),
@@ -172,13 +224,22 @@ $(document).ready(function() {
 		let nameVal = name.val(),
 				dateVal = date.val(),
 				originVal = origin.val(),
+				shopVal = shop.val(),
 				tracking_numberVal = tracking_number.val(),
 				max_daysVal = max_days.val(),
 				statusVal = status.val(),
 				commnetVal = comment.val() || "";
 
 		//Comprobantes
-		let formularioValido = true, nameValido, dateValido, originValido, tracking_numberValido, max_daysValido, statusValido, commnetValido;
+		let formularioValido = true,
+				nameValido,
+				dateValido,
+				originValido,
+				shopValido,
+				tracking_numberValido,
+				max_daysValido,
+				statusValido,
+				commnetValido;
 
 		//nombre
 		if (!nameVal) {
@@ -218,6 +279,15 @@ $(document).ready(function() {
 			originValido = true;
 		}
 
+		//Tienda Valida
+		if (!shopVal) {
+			shop.addClass('inputWarning');
+			shopValido = false;
+		} else {
+			shop.removeClass('inputWarning');
+			shopValido = true;
+		}
+
 		//Numero de tracking
 		if (!tracking_numberVal) {
 			tracking_number.addClass('inputWarning');
@@ -252,7 +322,7 @@ $(document).ready(function() {
 		}
 
 		//Confirmar los datos del formularios
-		if (nameValido && dateValido && originValido && tracking_numberValido && max_daysValido && statusValido) {
+		if (nameValido && dateValido && originValido && shopValido && tracking_numberValido && max_daysValido && statusValido) {
 			/* ____Enviar los datos para un nuevo reguistro____ */
 			$.ajax({
 				data: {
@@ -262,6 +332,7 @@ $(document).ready(function() {
 					addComment: commnetVal,
 					addDate: dateVal,
 					addOrigin: originVal,
+					addShop: shopVal,
 					addTracking: tracking_numberVal,
 					addMaxDays: max_daysVal
 				},
@@ -281,8 +352,8 @@ $(document).ready(function() {
 						//cerrar el modal
 						cerrarModal();
 
-						deleteOrderAjax();
-						loadTrackOnOpen();
+						//Functions when the panel is open
+						onOpenPanel();
 
 					} else {
 						//Notification
@@ -301,9 +372,7 @@ $(document).ready(function() {
 	//		WORKERS 
 	////////////////////
 	
-	/* __WORKER FOR TRACKING__ */
-	setInterval(doTrack, 360000);
-
+	
 
 }); //document.ready
 

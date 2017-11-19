@@ -72,7 +72,7 @@
 									<input type="number" name="addMaxDays" id="addMaxDays" class="form-control" placeholder="Max dias">
 								</div>
 								<div class="form-goup">
-									<label for="addStatus" >Introduce le nombre del producto:</label>
+									<label for="addStatus" >Introduce el estado del envio:</label>
 									<select id="addStatus" name="addStatus" class="form-control">
 										<option value="0">Procesando</option>
 										<option value="1">Enviado</option>
@@ -85,6 +85,16 @@
 						</div>
 						<div class="row">
 							<div class="col-md-12">
+								<div class="form-goup">
+									<label for="addShop">Introduce la tienda:</label>
+									<select id="addShop" name="addShop" class="form-control">
+										<option value="Gearbest">Gearbest</option>
+										<option value="Alixpress">Alixpress</option>
+										<option value="Banggod">Banggod</option>
+										<option value="Igogo">Igogo</option>
+										<option value="Tomtop">Tomtop</option>
+									</select>
+								</div>
 								<div class="form-group">
 									<label for="addComment">Añade una descripción al producto</label>
 									<textarea name="addComment" class="form-control" rows="7" placeholder="Comentario"></textarea>

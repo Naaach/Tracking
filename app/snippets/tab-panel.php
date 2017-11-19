@@ -10,11 +10,12 @@
  * @param  [date] $max_time       
  * @param  [date] $last_edit      
  * @param  [String] $tracking_number
- * @param  [String] $origin         
+ * @param  [String] $origin
+ * @param  [String] $shop         
  * @param  [String] $tracking_web   
  * @return [HTML]                
  */
-function create_table_panel($id, $name, $status, $comment, $order_date, $max_time, $last_edit, $tracking_number, $origin, $tracking_web) {
+function create_table_panel($id, $name, $status, $comment, $order_date, $max_time, $last_edit, $tracking_number, $origin, $shop, $tracking_web) {
 	return "
 		<div class=\"panel panel-default\" id=\"panel-". $id ."\">
 			<div class=\"panel-heading\">
@@ -27,17 +28,17 @@ function create_table_panel($id, $name, $status, $comment, $order_date, $max_tim
 				<div class=\"panel-body\">
 					<!-- Fechas -->
 					<div class=\"row order-time\">
-						<div class=\"col-md-3 text-center\">
+						<div class=\"col-md-3 text-center order_date\">
 							<h5>Fecha de pedido</h5>
 							<br>
 							<span>" . $order_date ."</span>
 						</div>
-						<div class=\"col-md-3 text-center\">
+						<div class=\"col-md-3 text-center max_time\" >
 							<h5>Fecha limite</h5>
 							<br>
 							<span>" . $max_time ."</span>
 						</div>
-						<div class=\"col-md-3 text-center\" id=\"rest-order-time\">
+						<div class=\"col-md-3 text-center rest-order-time\">
 							<h5>Restante</h5>
 							<br>
 							<span></span>
@@ -65,6 +66,10 @@ function create_table_panel($id, $name, $status, $comment, $order_date, $max_tim
 							<div class=\"country\">
 								<h5>País</h5>
 								<span>" . $origin ."</span>
+							</div>
+							<div class=\"shop\">
+								<h5>Tienda</h5>
+								<span>" . $shop ."</span>
 							</div>
 							<div class=\"number\">
 								<h5>Nº de seguimiento</h5>

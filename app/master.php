@@ -38,6 +38,7 @@ function newOrder($attrs) {
 		$comment = $attrs['addComment'];
 		$order_date = $attrs['addDate'];
 		$origin = $attrs['addOrigin'];
+		$shop = $attrs['addShop'];
 		$tracking_number = $attrs['addTracking'];
 		$max_time = $attrs['addMaxDays'];
 		$tracking_web = "http://www.17track.net/es/track?nums=" . $tracking_number;
@@ -45,8 +46,8 @@ function newOrder($attrs) {
 		
 
 		$query = "INSERT INTO `orders` 
-		(`id`, `name`, `status`, `comment`, `order_date`, `max_time`, `last_edit`, `tracking_number`, `origin`, `tracking_web`) 
-		VALUES (NULL, '$nombre', $status, '$comment', '$order_date', $max_time, '$last_edit', '$tracking_number', '$origin', '$tracking_web');";
+		(`id`, `name`, `status`, `comment`, `order_date`, `max_time`, `last_edit`, `tracking_number`, `origin`, `shop`, `tracking_web`) 
+		VALUES (NULL, '$nombre', $status, '$comment', '$order_date', $max_time, '$last_edit', '$tracking_number', '$origin', '$shop', '$tracking_web');";
 		
 		if (mysqli_query($cxn, $query)) {
 			//Recuperar los datos del registro introducido
@@ -55,24 +56,21 @@ function newOrder($attrs) {
 			if ($result = mysqli_query($cxn, $query)) {
 				//While fetch_array
 				while($row = mysqli_fetch_array($result)) {
-					print create_table_panel($row['id'], $row['name'], $row['status'], $row['comment'], $row['order_date'], $row['max_time'], $row['last_edit'], $row['tracking_number'], $row['origin'], $row['tracking_web']);
+					print create_table_panel($row['id'], $row['name'], $row['status'], $row['comment'], $row['order_date'], $row['max_time'], $row['last_edit'], $row['tracking_number'], $row['origin'], $row['shop'], $row['tracking_web']);
 				} // End of while
 
 			} else {
 				echo false;
 			}
 
-			//Cerrar la conexion
+			//Close conexion
 			close_db($cxn);
 
 		} else {
-			//Volver a la home y error de query
 			echo false;
-
 		}
 
 	} else {
-		//Volver a la home, no hay datos en $post
 		echo false;
 	}
 }
@@ -80,10 +78,6 @@ function newOrder($attrs) {
 if (isset($post['addOrder'])) {
 	newOrder($cxn, $post);
 }
-
-
-
-
 
 /**
  * load data form database
@@ -100,7 +94,7 @@ function load_data() {
 
 		//While fetch_array
 		while($row = mysqli_fetch_array($result)) {
-			print create_table_panel($row['id'], $row['name'], $row['status'], $row['comment'], $row['order_date'], $row['max_time'], $row['last_edit'], $row['tracking_number'], $row['origin'], $row['tracking_web']);
+			print create_table_panel($row['id'], $row['name'], $row['status'], $row['comment'], $row['order_date'], $row['max_time'], $row['last_edit'], $row['tracking_number'], $row['origin'], $row['shop'], $row['tracking_web']);
 		} // End of while
 
 	} else {
@@ -131,7 +125,7 @@ function delete_order($id) {
 	close_db($cxn);
 }
 
-//Borrar
+//Call functuons on ajax request
 if (isset($_POST['ajaxRequest'])) {
 
 	switch ($_POST['ajaxRequest']) {
