@@ -48,23 +48,35 @@ $(document).ready(function() {
 	});
 
 	/* __17Track API COnfiguration */
-	function doTrack() {
-		let panels = document.querySelectorAll('div.panel-collapse div.panel-body > div.info > div.tracking > div.number > span');
+	function doTrack(id) {
+		let panel = document.querySelector('div'+ id +' div.panel-body > div.info > div.tracking > div.number > span');
 
-		for (var i = 0; i < panels.length; i++) {
-			let containerID = panels[i].getAttribute('data-container-id');
-			let number = panels[i].innerHTML;
+		let containerID = panel.getAttribute('data-container-id');
+		let number = panel.innerHTML;
 
-			YQV5.trackSingle({
-	        YQ_ContainerId:"tracking-container-" + containerID,
-	        YQ_Height:400,
-	        YQ_Fc:"0",
-	        YQ_Lang:"es",
-	        YQ_Num:number
-	    });
-		}
+		YQV5.trackSingle({
+        YQ_ContainerId:"tracking-container-" + containerID,
+        YQ_Height:400,
+        YQ_Fc:"0",
+        YQ_Lang:"es",
+        YQ_Num:number
+    });
 	}
 
+	//Load on open panel
+	function loadTrackOnOpen() {
+
+		$('div.panel-heading > h4.panel-title > a').on('click', function(e) {
+			let aria_expanded = $(this).attr('aria-expanded');
+			if (!aria_expanded || aria_expanded == undefined ) {
+					let id = $(this).attr('href');
+					console.log(id);
+					console.log($(this).attr('aria-expanded'));
+					doTrack(id);
+			}
+		});
+
+	}
 
 
 	/////////////////////
@@ -84,7 +96,7 @@ $(document).ready(function() {
 				//inner the HTML on the view
 				$('#panels-view').html(response);
 				deleteOrderAjax();
-				doTrack();
+				loadTrackOnOpen();
 			} else {
 				$('#panels-view').html('No hay datos para mostrar');
 
@@ -270,7 +282,7 @@ $(document).ready(function() {
 						cerrarModal();
 
 						deleteOrderAjax();
-						doTrack();
+						loadTrackOnOpen();
 
 					} else {
 						//Notification
@@ -291,6 +303,7 @@ $(document).ready(function() {
 	
 	/* __WORKER FOR TRACKING__ */
 	setInterval(doTrack, 360000);
+
 
 }); //document.ready
 
