@@ -77,6 +77,26 @@ $(document).ready(function() {
 		}
 	}
 
+	/**
+	 * Check if the tab has a iframe
+	 * @param  {DOM element}  el - tab-heading
+	 * @return {Boolean} 
+	 */
+	function hasTrackingWindow(el) {
+		let containerId = "#tracking-container-" + el.attr('href').substring(9, el.attr('href').length);
+		return ($(containerId).children().length > 0);
+	}
+
+	/**
+	 * Delete the iframe on the tab
+	 * @param  {DOM element} el - tab-heading 
+	 * @return {[type]}
+	 */
+	function deleteTrackingWindow(el) {
+		let containerId = "#tracking-container-" + el.attr('href').substring(9, el.attr('href').length);
+		$(containerId).children('iframe').remove();
+	}
+
 	function timingOrder(id) {
 		let timeRow = $('div'+ id +' div.order-time'),
 				order_date = timeRow.find('div.order_date span').html().split('-'),
@@ -103,6 +123,8 @@ $(document).ready(function() {
 		
 	}
 
+
+
 	/**
 	 * Execute function to a especific panel when it opens
 	 * @return void
@@ -113,16 +135,21 @@ $(document).ready(function() {
 		panel.on('click', function(e) { 
 
 			let self = $(this);
+			let id = self.attr('href');
 
 			// Show thw tracking info
-			loadTrackOnOpen(self);
+			if (hasTrackingWindow(self)) {
+				deleteTrackingWindow(self);
+			} else {
+				setTimeout(loadTrackOnOpen, 120, self);
+			}
+				
 
 			// Refresh the delete function
 			deleteOrderAjax();
 
 			// Start timing the rest for the delivery
-			let id = self.attr('href');
-			//timingOrder(id);
+			timingOrder(id); 
 
 		});
 
@@ -361,8 +388,7 @@ $(document).ready(function() {
 							className: "error"
 						});
 					}
-					
-				}
+				} 
 			});
 		}
 
@@ -371,8 +397,6 @@ $(document).ready(function() {
 	/////////////////////
 	//		WORKERS 
 	////////////////////
-	
-	
 
 }); //document.ready
 
