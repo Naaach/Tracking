@@ -84,10 +84,10 @@ function create_table_panel($id, $name, $status, $comment, $order_date, $max_tim
 					<!-- Actions -->
 					<div class=\"row actions\">
 						<div class=\"col-md-12 text-center\">
-							<button type=\"button\" class=\"btn btn-info\" data-id=\"" . $id ."\">Editar</button>
-							<button type=\"button\" class=\"btn btn-success\" data-id=\"" . $id ."\">Recibido</button>
-							<button type=\"button\" class=\"btn btn-primary\" data-id=\"" . $id ."\" >Problemas</button>
-							<button type=\"button\" class=\"btn btn-danger deleteOrder\" data-id=\"" . $id ."\">Borrar</button>
+							<button type=\"button\" class=\"btn btn-info modal-edit\" data-id=\"" . $id ."\" name=\"modal-edit\">Editar</button>
+							<button type=\"button\" class=\"btn btn-success modal-confirm\" data-id=\"" . $id ."\" name=\"modal-confirm\">Recibido</button>
+							<button type=\"button\" class=\"btn btn-primary modal-problem\" data-id=\"" . $id ."\" name=\"modal-problem\">Problemas</button>
+							<button type=\"button\" class=\"btn btn-danger deleteOrder\" data-id=\"" . $id ."\" name=\"modal-delete\">Borrar</button>
 						</div>
 					</div>
 				</div>

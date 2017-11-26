@@ -9,16 +9,31 @@ $(document).ready(function() {
 	var $addOrderModal = $('section#addOrder-modal');
 	var $modalsBg = $('div#modal-bg');
 
+	// form
+	var $btnAddOrder = $('section#addOrder-modal form button[name="addOrder"]');
+	//Obtener los campos del formulario
+	let name = $('section#addOrder-modal form input#addName'),
+			date = $('section#addOrder-modal form input#addDate'),
+			origin = $('section#addOrder-modal form input#addOrigin'),
+			shop = $('section#addOrder-modal form select#addShop'),
+			tracking_number = $('section#addOrder-modal form input#addTracking'),
+			max_days = $('section#addOrder-modal form input#addMaxDays'),
+			status = $('section#addOrder-modal form select#addStatus'),
+			comment = $('section#addOrder-modal form textarea[name="addComment"]');
+
 	//Buttons
-	var $btnAddOrder = $('button.btn-addOrder-modal');
+	var $btnAddOrderModal = $('button.btn-addOrder-modal');
 	var $btnCloseModal = $('button.closeModal');
 
 
-	$btnAddOrder.on('click', function(e) {
+
+	$btnAddOrderModal.click(openModal);
+
+	function openModal() {
 		$modalsBg.css({'display' : 'block'}).animate({'opacity' : 1}, 400);
 		$addOrderModal.css({'display' : 'block'}).animate({'opacity' : 1}, 500);
 		$body.css({'overflow-x' : 'hidden'});
-	});
+	}
 
 	//Cerrar el modal
 	function cerrarModal(){
@@ -26,11 +41,18 @@ $(document).ready(function() {
 		$modalsBg.animate({'opacity' : 0}, 500, function() {
 			$addOrderModal.css({'display' : 'none'});
 			$(this).css({'display' : 'none'});
-			$body.css({'overflow-x' : 'auto'});
-		});	
+			$body.css({'overflow' : 'auto'});
+		});
+
+		$btnAddOrder.attr({
+			'data-update': false,
+			'data-id': ""
+		});
 	}
-	$modalsBg.on('click', cerrarModal);
-	$btnCloseModal.on('click', cerrarModal);
+
+
+	$modalsBg.click(cerrarModal);
+	$btnCloseModal.click(cerrarModal);
 
 	/* Notify.js defaults */
 	$.notify.defaults({
@@ -57,7 +79,7 @@ $(document).ready(function() {
 
 		YQV5.trackSingle({
         YQ_ContainerId: "tracking-container-" + containerID,
-        YQ_Height: 400,
+        YQ_Height: 300,
         YQ_Fc: "0",
         YQ_Lang: "es",
         YQ_Num: number
@@ -80,7 +102,7 @@ $(document).ready(function() {
 	/**
 	 * Check if the tab has a iframe
 	 * @param  {DOM element}  el - tab-heading
-	 * @return {Boolean} 
+	 * @return {Boolean}
 	 */
 	function hasTrackingWindow(el) {
 		let containerId = "#tracking-container-" + el.attr('href').substring(9, el.attr('href').length);
@@ -89,7 +111,7 @@ $(document).ready(function() {
 
 	/**
 	 * Delete the iframe on the tab
-	 * @param  {DOM element} el - tab-heading 
+	 * @param  {DOM element} el - tab-heading
 	 * @return {[type]}
 	 */
 	function deleteTrackingWindow(el) {
@@ -103,14 +125,13 @@ $(document).ready(function() {
 				max_time = timeRow.find('div.max_time span').html(),
 				rest_time = timeRow.find('div.rest-order-time span');
 
-		let limitDate = new Date(order_date[0], order_date[1], order_date[2]);
+		let limitDate = new Date(order_date[0], (order_date[1]-1), order_date[2]);
 		limitDate.setDate(limitDate.getDate() + parseInt(max_time));
-		
-		console.log(limitDate);
+
 		setInterval(function() {
 			let actualDate = new Date();
 
-			var restTime = limitDate.getTime() - actualDate.getTime();
+			var restTime =  limitDate.getTime() - actualDate.getTime();
 
 			let days = Math.floor(restTime / (1000 * 60 * 60 * 24)),
 		  		hours = Math.floor((restTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
@@ -120,10 +141,20 @@ $(document).ready(function() {
 			rest_time.html(days + ' - ' + hours +':'+ minutes +':'+ seconds);
 
 		}, 1000);
-		
+
 	}
 
-
+	function editOrder() {
+		let $btnEditOrder = $('button.modal-edit');
+		$btnEditOrder.click(function(event) {
+			let id = $(this).attr('data-id');
+			$btnAddOrder.attr({
+				'data-update': true,
+				'data-id': id
+			});
+			getDataFromId(id);
+		});
+	}
 
 	/**
 	 * Execute function to a especific panel when it opens
@@ -132,7 +163,7 @@ $(document).ready(function() {
 	function onOpenPanel() {
 		let panel = $('div.panel-heading > h4.panel-title > a');
 
-		panel.on('click', function(e) { 
+		panel.on('click', function(e) {
 
 			let self = $(this);
 			let id = self.attr('href');
@@ -143,109 +174,45 @@ $(document).ready(function() {
 			} else {
 				setTimeout(loadTrackOnOpen, 120, self);
 			}
-				
+
+			// Edit order
+			editOrder();
 
 			// Refresh the delete function
 			deleteOrderAjax();
 
 			// Start timing the rest for the delivery
-			timingOrder(id); 
+			timingOrder(id);
 
 		});
 
-	}
-
-
-	/////////////////////
-	//		AJAX 
-	////////////////////
-
-	/* ____Cargar los datos de la bbdd____ */
-	$.ajax({
-		data: {
-			'ajaxRequest' : 'loadData'
-		},
-		url: '/app/master.php',
-		type: 'POST',
-
-		success: function(response) {
-			if (response) {
-				//inner the HTML on the view
-				$('#panels-view').html(response);
-
-				//Functions when the panel is open
-				onOpenPanel();
-			} else {
-				$('#panels-view').html('No hay datos para mostrar');
-
-				//Notification
-				$.notify("Error cargando en contenido", {
-					className: "error"
-				});
-			}
-		}
-	});
-
-	/* ____Borrar un registro de la base de datos____ */
-	function deleteOrderAjax() {
-
-		var $btnDeleteOrder = $('div.panel-body div.actions button.deleteOrder');
-		$btnDeleteOrder.on('click', function (e) {
-
-			let id = $(this).attr('data-id');
-			let pregunta = confirm("¿Seguro que quieres borrar el pedido?");
-
-			if (pregunta) {
-
-				$.ajax({
-					data: {
-						'ajaxRequest' : 'deleteOrder',
-						'orderID' : id
-					},
-					
-					url:'/app/master.php',
-					type: 'POST',
-					
-					success: function(response) {
-						if (response) {
-							//Hide the delete tab
-							$('div#panel-' + id).animate({'height' : 0 + 'px'}, 1000, function() {
-								$(this).css({'display' : 'none'});
-							});
-
-							//Notification
-							$.notify("El pedido ha sido borrado de la lista", {
-								className: "success"
-							});
-
-						} else {
-							alert("no se ha podido borrar el campo: " + id + response);
-							
-							//Notification
-							$.notify("Ocurrio un error durante el borrado", {
-								className: "error"
-							});
-
-						}
-					}
-				});
-			}
-		});
 	}
 
 	/* ____Validar los datos del formulario y enviar al servidor____ */
-	var $btnAddOrder = $('section#addOrder-modal form button[name="addOrder"]');
-	$btnAddOrder.on('click', function(e) {
+	$btnAddOrder.click(function(event) {
 
-		//Obtener los campos del formulario
-		let name = $('section#addOrder-modal form input#addName'),
-				date = $('section#addOrder-modal form input#addDate'),
-				origin = $('section#addOrder-modal form input#addOrigin'),
-				shop = $('section#addOrder-modal form select#addShop'),
-				tracking_number = $('section#addOrder-modal form input#addTracking'),
-				max_days = $('section#addOrder-modal form input#addMaxDays'),
-				status = $('section#addOrder-modal form select#addStatus'),
-				comment = $('section#addOrder-modal form textarea[name="addComment"]');
+		let isUpdate = $(this).attr('data-update');
+		let formValues = validateForm();
+		let isValidForm = formValues.formStatus;
+
+		if (isValidForm) {
+			if (eval(isUpdate)) {
+				// Update especific row
+				formValues.id = $btnAddOrder.attr('data-id');
+				updateOrderAjax(formValues);
+			} else {
+				// Add a new order
+				addOrderAjax(formValues);
+			}
+		}
+
+	});	// btnAddOrder
+
+	/**
+	 * Validate form fields
+	 * @return {obj} params of the form
+	 */
+	function validateForm() {
 
 		//Obtener los valores de los campos
 		let nameVal = name.val(),
@@ -323,7 +290,7 @@ $(document).ready(function() {
 			tracking_number.removeClass('inputWarning');
 			tracking_numberValido = true;
 		}
-		
+
 		//Maximo de dias
 		if (!max_daysVal) {
 			max_daysValido = false;
@@ -342,7 +309,7 @@ $(document).ready(function() {
 		if (!isNaN(parseInt(statusVal))) {
 			statusValido = true;
 			status.removeClass('inputWarning');
-			
+
 		} else {
 			statusValido = false;
 			status.addClass('inputWarning');
@@ -350,18 +317,154 @@ $(document).ready(function() {
 
 		//Confirmar los datos del formularios
 		if (nameValido && dateValido && originValido && shopValido && tracking_numberValido && max_daysValido && statusValido) {
-			/* ____Enviar los datos para un nuevo reguistro____ */
-			$.ajax({
+			return {
+				formStatus: true,
+				nameVal: nameVal,
+				statusVal: statusVal,
+				commnetVal: commnetVal,
+				dateVal: dateVal,
+				originVal: originVal,
+				shopVal: shopVal,
+				tracking_numberVal: tracking_numberVal,
+				max_daysVal: max_daysVal
+			};
+		} else {
+			return {
+				formStatus: false
+			};
+		}
+
+	}
+
+	/////////////////////
+	//		AJAX
+	////////////////////
+
+	/* ____Cargar los datos de la bbdd____ */
+	$.ajax({
+		data: {
+			'ajaxRequest' : 'loadData'
+		},
+		url: '/app/master.php',
+		type: 'POST',
+
+		success: function(response) {
+			if (response) {
+				//inner the HTML on the view
+				$('#panels-view').html(response);
+
+				//Functions when the panel is open
+				onOpenPanel();
+			} else {
+				$('#panels-view').html('No hay datos para mostrar');
+
+				//Notification
+				$.notify("Error cargando en contenido", {
+					className: "error"
+				});
+			}
+		}
+	});
+
+	/* ____Borrar un registro de la base de datos____ */
+	function deleteOrderAjax() {
+
+		var $btnDeleteOrder = $('div.panel-body div.actions button.deleteOrder');
+
+		$btnDeleteOrder.unbind('click');
+		$btnDeleteOrder.click(function (e) {
+
+			let id = $(this).attr('data-id');
+			let pregunta = confirm("¿Seguro que quieres borrar el pedido?");
+
+			if (pregunta) {
+
+				$.ajax({
+					data: {
+						'ajaxRequest' : 'deleteOrder',
+						'orderID' : id
+					},
+
+					url:'/app/master.php',
+					type: 'POST',
+
+					success: function(response) {
+						if (response) {
+							//Hide the delete tab
+							$('div#panel-' + id).animate({'height' : 0 + 'px'}, 1000, function() {
+								$(this).css({'display' : 'none'});
+							});
+
+							//Notification
+							$.notify("El pedido ha sido borrado de la lista", {
+								className: "success"
+							});
+
+						} else {
+							alert("no se ha podido borrar el campo: " + id + response);
+
+							//Notification
+							$.notify("Ocurrio un error durante el borrado", {
+								className: "error"
+							});
+
+						}
+					}
+				});
+			}
+		});
+	}
+
+	/* ____[JSON] Obtener los datos de un pedido____ */
+	function getDataFromId(id) {
+		$.ajax({
+			data: {
+				ajaxRequest: 'dataFromId',
+				orderID: id
+			},
+			dataType: 'json',
+			url: '/app/master.php',
+			type: 'GET',
+			success: function(response) {
+				if (response) {
+					let order = response[0];
+
+					openModal();
+
+					// modificar los valores
+					name.val(order.name);
+					date.val(order.order_date);
+					origin.val(order.origin);
+					shop.val(order.shop);
+					tracking_number.val(order.tracking_number);
+					max_days.val(parseInt(order.max_time));
+					status.val(order.status);
+					comment.val(order.comment);
+
+				} else {
+					//Notification
+					$.notify("Ocurrio un error obteniendo los datos", {
+						className: "error"
+					});
+				}
+			}
+
+		});
+	}
+
+	/* ____Enviar los datos para un nuevo reguistro____ */
+	function addOrderAjax(values) {
+		$.ajax({
 				data: {
 					ajaxRequest: 'addOrder',
-					addName: nameVal,
-					addStatus: statusVal,
-					addComment: commnetVal,
-					addDate: dateVal,
-					addOrigin: originVal,
-					addShop: shopVal,
-					addTracking: tracking_numberVal,
-					addMaxDays: max_daysVal
+					addName: values.nameVal,
+					addStatus: values.statusVal,
+					addComment: values.commnetVal,
+					addDate: values.dateVal,
+					addOrigin: values.originVal,
+					addShop: values.shopVal,
+					addTracking: values.tracking_numberVal,
+					addMaxDays: values.max_daysVal
 				},
 
 				url:'/app/master.php',
@@ -388,15 +491,51 @@ $(document).ready(function() {
 							className: "error"
 						});
 					}
-				} 
+				}
 			});
-		}
+	}
 
-	});
+	/* ____Update ordrer ajax____ */
+	function updateOrderAjax(values) {
+
+		$.ajax({
+			data: {
+				ajaxRequest: 'updateOrder',
+				orderID: values.id,
+				addName: values.nameVal,
+				addStatus: values.statusVal,
+				addComment: values.commnetVal,
+				addDate: values.dateVal,
+				addOrigin: values.originVal,
+				addShop: values.shopVal,
+				addTracking: values.tracking_numberVal,
+				addMaxDays: values.max_daysVal
+			},
+			type: 'POST',
+			url: '/app/master.php',
+			dataType: 'json',
+			success: function(response) {
+				if (response.resStatus) {
+
+					cerrarModal();
+					//Notification
+					$.notify("Tu pedido se ha actualizado correctamente", {
+						className: "success"
+					});
+
+				} else {
+					//Notification
+					$.notify("Ocurrio un error insertando el pedido", {
+						className: "error"
+					});
+				}
+			}
+
+		});
+	}
 
 	/////////////////////
-	//		WORKERS 
+	//		WORKERS
 	////////////////////
 
 }); //document.ready
-
